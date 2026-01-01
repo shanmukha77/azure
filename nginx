@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# Update system and install nginx
+apt-get update
+apt-get install -y nginx
+
+# Create directory structure
+mkdir -p /var/www/html
+mkdir -p /var/www/html/gmail 
+mkdir -p /var/www/html/youtube 
+
+# Create HTML content with more descriptive text
+cat > /var/www/html/gmail/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gmail Service</title>
+</head>
+<body>
+    <h1>Hello From Gmail Account</h1>
+    <p>Path: /gmail/</p>
+    <p>Served from: /var/www/html/gmail/index.html</p>
+</body>
+</html>
+EOF
+
+cat > /var/www/html/youtube/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Service</title>
+</head>
+<body>
+    <h1>Hello from youtube Account</h1>
+    <p>Path: /youtube/</p>
+    <p>Served from: /var/www/html/youtube/index.html</p>
+</body>
+</html>
+EOF
+
+cat > /var/www/html/index.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+</head>
+<body>
+    <h1>Google Home Page</h1>
+    <p>Path: /</p>
+    <p>Served from: /var/www/html/index.html</p>
+    <h3>Available Services:</h3>
+    <ul>
+        <li><a href="/gmail/">Gmail Service</a></li>
+        <li><a href="/youtube/">YouTube Service</a></li>
+    </ul>
+</body>
+</html>
+EOF
+
+# Create the simplest possible Nginx config that works reliably
+cat > /etc/nginx/sites-available/default << 'EOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    
+    root /var/www/html;
+    index index.html index.htm;
+    
+    # Handle requests to root
+    location / {
+        try_files $uri $uri/ =404;
+    }
+    
+    # Handle /gmail requests
+    location /gmail {
+        # Add trailing slash if missing
+        rewrite ^/gmail$ /gmail/ permanent;
+    }
+    
+    location /gmail/ {
+        alias /var/www/html/gmail/;
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # Handle /youtube requests
+    location /youtube {
+        # Add trailing slash if missing
+        rewrite ^/youtube$ /youtube/ permanent;
+    }
+    
+    location /youtube/ {
+        alias /var/www/html/youtube/;
+        try_files $uri $uri/ /index.html;
+    }
+}
+EOF 

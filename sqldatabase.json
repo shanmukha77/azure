@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "SQLLogin": {
+            "type": "string",
+            "metadata": {
+              "description": "The administrator user name for the Azure SQL Server"
+            }
+          },
+          "SQLPassword": {
+            "type": "secureString",
+            "metadata": {
+              "description": "The administrator password for the Azure SQL Server"
+            }
+          }
+    },
+    "functions": [],
+    "variables": { },
+    "resources": [
+        {
+            "name": "sqlserver500505",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2021-08-01-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "administratorLogin": "[parameters('SQLLogin')]",
+                "administratorLoginPassword": "[parameters('SQLPassword')]"
+              }
+        },
+        {
+            "name": "[format('{0}/{1}', 'sqlserver500505', 'appdb')]",
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2021-08-01-preview",
+            "location": "[resourceGroup().location]",            
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', 'sqlserver500505')]"
+            ],
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+              },
+              "properties": {}
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {        
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "plan898958",
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2020-12-01",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "F1",
+                "capacity": 1
+            },
+            "properties": {
+                "name": "plan898958"
+            }
+        },
+        {
+            "name": "newapp895823",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2020-12-01",
+            "location": "[resourceGroup().location]",            
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', 'plan898958')]"
+            ],
+            "properties": {
+                "name": "newapp895823",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', 'plan898958')]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "LinkedTemplate",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                  "uri": "https://storageaccount89755.blob.core.windows.net/arm-linked-templates/sqldatabase.json",
+                  "contentVersion": "1.0.0.0"
+         
+    },
+    "parametersLink": {
+        "uri": "",
+        "contentVersion": "1.0.0.0"
+      }
+    }}
+    ],
+    "outputs": {}
+}

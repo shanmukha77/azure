@@ -18,6 +18,7 @@ az vm create \
     --resource-group $resourceGroupName \
     --name $vmName \
     --image Ubuntu2204 \
+    --size Standard_D2s_v5 \
     --admin-username $adminUsername \
     --admin-password $adminPassword \
     --assign-identity \

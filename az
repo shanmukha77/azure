@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Set variables (update these with your own values)
+resourceGroupName="entraid"
+vmName="myIdentityVM"
+storageAccountName="mithunstorage1458"  # Must be globally unique
+containerName="entraid-098"
+location="CENTRALINDIA"
+adminUsername="azureuser"  # Replace with your desired admin username
+adminPassword="Linux@786$#$"  # Use a strong password or SSH key
+
+# 1. Create a resource group
+az group create --name $resourceGroupName --location $location
+
+# 2. Create a Linux VM with system-assigned managed identity enabled
+echo "Creating VM with system-assigned managed identity..."
+az vm create \
+    --resource-group $resourceGroupName \
+    --name $vmName \
+    --image Ubuntu2204 \
+    --admin-username $adminUsername \
+    --admin-password $adminPassword \
+    --assign-identity \
+    --generate-ssh-keys # Use this for SSH key authentication instead of password
+
+# 3. Create a storage account
+echo "Creating storage account..."
+az storage account create \
+    --resource-group $resourceGroupName \
+    --name $storageAccountName \
+    --location $location \
+    --sku Standard_LRS
+
+# 4. Create a blob container
+echo "Creating blob container..."
+az storage container create \
+    --account-name $storageAccountName \
+    --name $containerName \
+    --auth-mode login

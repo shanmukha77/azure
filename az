@@ -9,6 +9,13 @@ location="CENTRALINDIA"
 adminUsername="azureuser"  # Replace with your desired admin username
 adminPassword="Linux@786$#$"  # Use a strong password or SSH key
 
+
+connectionString=$(az storage account show-connection-string \
+    --resource-group $resourceGroupName \
+    --name $storageAccountName \
+    --query connectionString -o tsv)
+
+    
 # 1. Create a resource group
 az group create --name $resourceGroupName --location $location
 
@@ -38,3 +45,37 @@ az storage container create \
     --account-name $storageAccountName \
     --name $containerName \
     --auth-mode login
+
+
++++++++++++++++++++++++++++++
+# Create a sample file
+echo "Hello World from Managed Identity!" > sample.txt
+
+# Get the storage account connection string
+connectionString=$(az storage account show-connection-string \
+    --resource-group $resourceGroupName \
+    --name $storageAccountName \
+    --query connectionString -o tsv)
+
+# Upload the file to the blob container
+az storage blob upload \
+    --connection-string $connectionString \
+    --container-name $containerName \
+    --name sample.txt \
+    --file sample.txt
+
+echo "Sample file uploaded to blob container."
+++++++++++++++++++++++
+# Get the VM's system-assigned managed identity principal ID
+spID=$(az vm show --resource-group $resourceGroupName --name $vmName --query identity.principalId -o tsv)
+
+# Get the storage account resource ID
+storageId=$(az storage account show --resource-group $resourceGroupName --name $storageAccountName --query id -o tsv)
+
+# Assign the "Storage Blob Data Reader" role to the managed identity at the storage account scope
+az role assignment create \
+    --assignee $spID \
+    --role "Storage Blob Data Reader" \
+    --scope $storageId
+
+echo "Role assignment complete. The VM can now read blobs from the storage account."

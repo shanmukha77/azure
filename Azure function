@@ -1,0 +1,33 @@
+sudo apt update
+sudo apt upgrade -y
+
+# Add repository
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+
+# Install Python 3.9 and pip
+sudo apt install python3.9 python3.9-venv python3.9-dev -y
+sudo apt install python3-pip -y
+
+# Verify
+python3.9 --version
+pip3 --version
+
+
+# Get Microsoft signing key
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# Verify
+az version
+
+# Download the .deb package
+curl -LO https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb
+
+# Install Microsoft package feed
+sudo dpkg -i packages-microsoft-prod.deb
+
+# Update package lists
+sudo apt-get update
+
+# Install Functions Core Tools
+sudo apt-get install azure-functions-core-tools-4

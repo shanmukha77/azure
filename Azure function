@@ -31,3 +31,9 @@ sudo apt-get update
 
 # Install Functions Core Tools
 sudo apt-get install azure-functions-core-tools-4
+
+
+
+   39  echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-functions/ jammy main" | sudo tee /etc/apt/sources.list.d/azure-functions.list
+   40  echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-functions/ noble main" | sudo tee /etc/apt/sources.list.d/azure-functions.list
+

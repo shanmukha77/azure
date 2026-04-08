@@ -1,0 +1,31 @@
+postgres=> CREATE DATABASE company;
+CREATE DATABASE
+postgres=> \c company
+psql (16.13 (Ubuntu 16.13-0ubuntu0.24.04.1), server 17.9)
+WARNING: psql major version 16, server major version 17.
+         Some psql features might not work.
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, compression: off)
+You are now connected to database "company" as user "userdb".
+company=> CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    age INT,
+    doj DATE,
+    gender VARCHAR(10),
+    contact_number VARCHAR(15)
+);
+CREATE TABLE
+company=> INSERT INTO employees (name, age, doj, gender, contact_number)
+VALUES
+('Alice', 28, '2023-05-10', 'Female', '9876543210'),
+('Bob', 32, '2022-11-01', 'Male', '9123456789'),
+('Charlie', 26, '2024-01-15', 'Other', '9988776655');
+INSERT 0 3
+company=> SELECT * FROM employees;
+ id |  name   | age |    doj     | gender | contact_number
+----+---------+-----+------------+--------+----------------
+  1 | Alice   |  28 | 2023-05-10 | Female | 9876543210
+  2 | Bob     |  32 | 2022-11-01 | Male   | 9123456789
+  3 | Charlie |  26 | 2024-01-15 | Other  | 9988776655
+(3 rows)
+

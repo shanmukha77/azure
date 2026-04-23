@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "SQLLogin": {
+            "type": "String",
+            "metadata": {
+                "description": "The administrator user name"
+            }
+        },
+        "SQLPassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "The administrator password"
+            }
+        }
+    },
+    "variables": {},
+    "functions": [],
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2022-03-01",
+            "name": "plan787878",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "F1",
+                "capacity": 1
+            },
+            "properties": {
+                "name": "plan787878"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2022-03-01",
+            "name": "newapp999876",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms','plan787878')]"
+            ],
+            "properties": {
+                "name": "newapp999876",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms','plan787878')]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "childTemplate",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Sql/servers",
+                            "apiVersion": "2022-02-01-preview",
+                            "name": "sqlserver500505",
+                            "location": "[resourceGroup().location]",
+                            "properties": {
+                                "administratorLogin": "[parameters('SQLLogin')]",
+                                "administratorLoginPassword": "[parameters('SQLPassword')]"
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Sql/servers/databases",
+                            "apiVersion": "2022-02-01-preview",
+                            "name": "[format('{0}/{1}','sqlserver500505','appdb')]",
+                            "location": "[resourceGroup().location]",
+                            "sku": {
+                                "name": "Basic",
+                                "tier": "Basic"
+                            },
+                            "properties": {},
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Sql/servers','sqlserver500505')]"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
